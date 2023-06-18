@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+	<title>"淡江行事曆"</title>
+    <meta charset='utf-8' />
+        <!-- CSS for full calender -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css" rel="stylesheet" />
+	<!-- JS for jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- JS for full calender -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+<!-- bootstrap css and js -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https: //cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css"/>
+	<link rel="stylesheet" href="https ://cdnis.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css" />
+	<script src="https: //cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnis.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https: //cdnjs.cloudflare.com/ajax/libs/ moment. js/2.18.1/moment.min.js"></script></script>
+<script src="https: //cdnjs.cloudflare.com/ajax/libs/ fullcalendar/3.4.0/fullcalendarmin.js"></script></script>
+
+    <!--連結full calender-->
+    <link href='main.css' rel='stylesheet' />
+    <script src='main.js'></script>
+
+    <!--轉換成中文 -->
+    <script src="locales-all.js"></script>
+    
+	<h2 align="center"><a href="#">淡江個人行事曆</a></h2>
+    <script>
+	
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+		
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          locale:'zh-tw',
+          navLinks:true,
+          headerToolbar:{
+            left: 'prev,next today',
+            center: 'title',
+            right:'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+		  events:'load.php',
+		  selectable:true,
+		selectHelper:true,
+			events:[
+				{
+			title:'期末考',
+			start: '2023-06-12',
+			end:'2023-06-17'
+				}
+		],
+		  
+		select: function (stabt, end, allDay)
+		{
+			var title = prompt("Enter Event Title");
+			if(title)
+			{var start = $. fullCalendar. formatDate(start,"Y-MM-DD HH:mm:ss");
+			var end = $. fullCalendar. formatDate(end, "Y-MM-DD HH:min: ss") ;
+			$.ajax({
+				url:"insert.php", 
+				type: "POST",
+				data:{title:title, start: start, end:end},
+				success:function()
+				{
+					calendar.fullCalendar ('refetchEvents');
+					alert("Added Successfully");
+				}
+			})
+			}
+		},
+			editable:true,
+			eventResize:function(event)
+			{
+				var start = $. fullCalendar. formatDate(event. start,"Y-MM-DD HH: mm: ss");
+				var eng = $. fullCalendar. formatDate (event .end, "Y-MM-DD HH: mm: ss");
+				var title = event. title;
+				var id = event.id;
+				$.ajax({
+					url: "update.php",
+					type: "POST",
+					data: {title:title, start:start, end: end, id: id},
+					success:function(){
+						calendar.fullCalendar('refetchEvents');
+						alert ('Event Update');
+					}
+				})
+			},
+        });
+        calendar.render();
+
+      });
+	  
+    </script>
+    
+  </head>
+  <body>
+    <div id='calendar'></div>
+<!-- Start popup dialog box -->
+<div class="modal fade" id="event_entry_modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalLabel">Add New Event</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="img-container">
+					<div class="row">
+						<div class="col-sm-12">  
+							<div class="form-group">
+							  <label for="event_name">Event name</label>
+							  <input type="text" name="event_name" id="event_name" class="form-control" placeholder="Enter your event name">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">  
+							<div class="form-group">
+							  <label for="event_start_date">Event start</label>
+							  <input type="date" name="event_start_date" id="event_start_date" class="form-control onlydatepicker" placeholder="Event start date">
+							 </div>
+						</div>
+						<div class="col-sm-6">  
+							<div class="form-group">
+							  <label for="event_end_date">Event end</label>
+							  <input type="date" name="event_end_date" id="event_end_date" class="form-control" placeholder="Event end date">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="save_event()">Save Event</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End popup dialog box -->
+    
+  </body>
+  
+</html>
+?>
